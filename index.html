@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flowers: Faded → Vibrant</title>
+  <style>
+    html, body {
+      margin:0;
+      height:100%;
+      font-family: Inter, system-ui, Roboto, Arial;
+      background:#f0f0f0;
+    }
+    .wrap{
+      max-width:1200px;
+      margin:24px auto;
+      padding:12px;
+      position: relative;
+    }
+    .photo{
+      position:relative;
+      width:100%;
+      aspect-ratio:16/9;
+      border-radius:8px;
+      overflow:hidden;
+      box-shadow:0 6px 30px rgba(0,0,0,0.15);
+      background-image:url('flowers.jpg');
+      background-size:cover;
+      background-position:center;
+
+      filter: grayscale(60%) brightness(80%) saturate(50%) contrast(85%);
+      transition: filter 0.2s ease;
+    }
+
+    .instruction {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.8);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .photo:hover{
+      filter: grayscale(0%) brightness(105%) saturate(130%) contrast(110%);
+    }
+
+    @media(max-width:700px){
+      .photo{aspect-ratio:4/3;}
+      .instruction{font-size:12px; padding:6px 12px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="instruction">Move your mouse up to fade the flowers, down to make them vibrant.</div>
+    <div class="photo"></div>
+  </div>
+
+  <script>
+    const photo = document.querySelector('.photo');
+
+    const faded = { grayscale: 60, brightness: 80, saturate: 50, contrast: 85 };
+    const vibrant = { grayscale: 0, brightness: 105, saturate: 130, contrast: 110 };
+
+    let lastY = null;
+    let current = { ...faded };
+
+    function applyFilter() {
+      photo.style.filter = `grayscale(${current.grayscale}%) brightness(${current.brightness}%) saturate(${current.saturate}%) contrast(${current.contrast}%)`;
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (lastY !== null) {
+        const delta = e.clientY - lastY;
+
+        if (delta < 0) {
+          current.grayscale = Math.min(faded.grayscale, current.grayscale + 2);
+          current.brightness = Math.max(faded.brightness, current.brightness - 1);
+          current.saturate = Math.max(faded.saturate, current.saturate - 2);
+          current.contrast = Math.max(faded.contrast, current.contrast - 1);
+          applyFilter();
+        } else if (delta > 0) {
+          current.grayscale = Math.max(vibrant.grayscale, current.grayscale - 2);
+          current.brightness = Math.min(vibrant.brightness, current.brightness + 1);
+          current.saturate = Math.min(vibrant.saturate, current.saturate + 2);
+          current.contrast = Math.min(vibrant.contrast, current.contrast + 1);
+          applyFilter();
+        }
+      }
+      lastY = e.clientY;
+    });
+  </script>
+</body>
+</html>
